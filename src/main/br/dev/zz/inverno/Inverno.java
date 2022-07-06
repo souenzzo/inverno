@@ -34,7 +34,7 @@ record TextEncoderImpl(Context ctx) implements ProxyInstantiable {
     }
 }
 public record Inverno() {
-    static void wintercg(Context ctx) {
+    static public void wintercg(Context ctx) {
         var b = ctx.getBindings("js");
         b.putMember("TextEncoder", new TextEncoderImpl(ctx));
         // b.putMember("TextEncoder", new TextEncoderImpl(ctx));

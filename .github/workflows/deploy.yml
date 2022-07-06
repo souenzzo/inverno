@@ -11,6 +11,7 @@ jobs:
         with:
           java-version: "17"
           distribution: "adopt"
+          cache: "maven"
       - run: "mvn deploy"
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
