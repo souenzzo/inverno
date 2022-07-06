@@ -7,6 +7,9 @@ import org.graalvm.polyglot.proxy.ProxyExecutable;
 import org.graalvm.polyglot.proxy.ProxyInstantiable;
 import org.graalvm.polyglot.proxy.ProxyObject;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -32,10 +35,34 @@ record TextEncoderImpl(Context ctx) implements ProxyInstantiable {
         return ProxyObject.fromMap(fields);
     }
 }
+
+record FetchImpl(Context ctx, HttpClient http_client) implements  ProxyExecutable {
+
+    public Object execute(Value... arguments) {
+
+        var req = URI.create(String.valueOf(arguments[0]));
+        Value Promise = ctx.getBindings("js").getMember("Promise");
+        return Promise.newInstance(new ProxyExecutable() {
+            public Object execute(Value... arguments) {
+                var ok = arguments[0];
+                if (Objects.nonNull(ok) && ok.canExecute()) {
+                    ok.execute(42);
+                }
+                return null;
+            }
+        });
+    }
+}
 public record Inverno() {
     static public void wintercg(Context ctx) {
+        wintercg(ctx, null);
+    }
+    static public void wintercg(Context ctx, HttpClient http_client) {
         var b = ctx.getBindings("js");
         b.putMember("TextEncoder", new TextEncoderImpl(ctx));
+        if (Objects.nonNull(http_client)) {
+            b.putMember("fetch", new FetchImpl(ctx, http_client));
+        }
         // b.putMember("TextEncoder", new TextEncoderImpl(ctx));
     }
 }
