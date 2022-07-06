@@ -41,4 +41,11 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub souenzzo Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/souenzzo/inverno</url>
+        </repository>
+    </distributionManagement>
 </project>
