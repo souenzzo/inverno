@@ -22,9 +22,8 @@ record TextEncoderImpl(Context ctx) implements ProxyInstantiable {
         fields.put("encoding", encoding.toString().toLowerCase());
         fields.put("encode", (ProxyExecutable) args -> {
             var x = args[0];
-            var bs = (Objects.isNull(x) ? "" : x.asString()).getBytes(encoding);
             var v = new LinkedList<>();
-            for (var i : bs) {
+            for (var i:  (Objects.isNull(x) ? "" : x.asString()).getBytes(encoding)) {
                 v.add(i);
             }
             return Uint8Array.invokeMember("from",
