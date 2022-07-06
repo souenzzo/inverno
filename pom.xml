@@ -40,6 +40,12 @@
             <version>5.9.0-M1</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.clojure</groupId>
+            <artifactId>clojure</artifactId>
+            <version>1.11.1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <distributionManagement>
         <repository>

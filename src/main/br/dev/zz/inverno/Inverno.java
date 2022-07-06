@@ -10,6 +10,7 @@ import org.graalvm.polyglot.proxy.ProxyObject;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -40,14 +41,22 @@ record FetchImpl(Context ctx, HttpClient http_client) implements  ProxyExecutabl
 
     public Object execute(Value... arguments) {
 
-        var req = URI.create(String.valueOf(arguments[0]));
-        Value Promise = ctx.getBindings("js").getMember("Promise");
+        var req = HttpRequest
+                .newBuilder(URI.create(String.valueOf(arguments[0])))
+                .build();
+        var Promise = ctx.getBindings("js").getMember("Promise");
+        var fut_res = http_client.sendAsync(
+                req, HttpResponse.BodyHandlers.ofString()
+        );
         return Promise.newInstance(new ProxyExecutable() {
             public Object execute(Value... arguments) {
                 var ok = arguments[0];
-                if (Objects.nonNull(ok) && ok.canExecute()) {
-                    ok.execute(42);
-                }
+                fut_res.thenApply(res -> {
+                    var m = new HashMap<String, Object>();
+                    m.put("status", res.statusCode());
+                    ok.execute(ProxyObject.fromMap(m));
+                    return null;
+                });
                 return null;
             }
         });
