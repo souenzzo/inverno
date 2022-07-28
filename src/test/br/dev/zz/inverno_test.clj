@@ -40,7 +40,15 @@
               (str @p)))))))
 
 ;; https://common-min-api.proposal.wintercg.org/
-(deftest wintercg-global-properties
+(deftest common-index-api-interfaces
+  (System/setProperty "polyglot.engine.WarnInterpreterOnly" "false")
+  (with-open [ctx (Context/create (into-array String ["js"]))]
+    (Inverno/wintercg ctx)
+    (is (= "function"
+          (str (.eval ctx "js" "typeof TextEncoder"))))))
+
+;; https://common-min-api.proposal.wintercg.org/
+(deftest common-index-api-global-methods-properties
   (System/setProperty "polyglot.engine.WarnInterpreterOnly" "false")
   (with-open [ctx (Context/create (into-array String ["js"]))]
     (Inverno/wintercg ctx)
@@ -62,7 +70,6 @@
     #_(is (= "object" (str (.eval ctx "js" "typeof globalThis.setInterval"))))
     #_(is (= "object" (str (.eval ctx "js" "typeof globalThis.clearInterval"))))
     #_(is (= "object" (str (.eval ctx "js" "typeof globalThis.structuredClone"))))))
-
 
 (deftest atob-btoa
   (System/setProperty "polyglot.engine.WarnInterpreterOnly" "false")
