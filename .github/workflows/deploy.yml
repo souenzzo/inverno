@@ -15,7 +15,6 @@ jobs:
           java-version: "17"
           distribution: "adopt"
           cache: "maven"
-      - run: "env"
-      - run: "echo mvn deploy -Dbr.dev.zz.inverno.version=$GITHUB_REF"
+      - run: "echo mvn deploy -Dbr.dev.zz.inverno.version=${GITHUB_REF#refs/tags/}"
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
