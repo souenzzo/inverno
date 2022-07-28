@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>br.dev.zz</groupId>
     <artifactId>inverno</artifactId>
-    <version>0.0.3-SNAPSHOT</version>
+    <version>${br.dev.zz.inverno.version}</version>
     <name>inverno</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

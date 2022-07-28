@@ -1,4 +1,7 @@
-on: ["workflow_dispatch"]
+on:
+  push:
+    tags:
+      - "*"
 jobs:
   publish:
     runs-on: "ubuntu-latest"
@@ -12,6 +15,6 @@ jobs:
           java-version: "17"
           distribution: "adopt"
           cache: "maven"
-      - run: "mvn deploy"
+      - run: "mvn deploy -Dbr.dev.zz.inverno.version=$GITHUB_REF"
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
