@@ -86,6 +86,7 @@ public record Inverno() {
     static public void wintercg(Context ctx, HttpClient http_client) {
         var b = ctx.getBindings("js");
         var globalThis = b.getMember("globalThis");
+        globalThis.putMember("self", globalThis);
         globalThis.putMember("btoa", new Btoa(ctx));
         globalThis.putMember("atob", new Atob(ctx));
         b.putMember("TextEncoder", new TextEncoderImpl(ctx));

@@ -1,12 +1,11 @@
 (ns br.dev.zz.inverno-test
-  (:require [clojure.test :refer [deftest is]]
-            [clojure.edn :as edn])
+  (:require [clojure.test :refer [deftest is]])
   (:import (br.dev.zz.inverno Inverno)
+           (clojure.lang IDeref)
            (java.net.http HttpClient HttpResponse)
            (java.util.concurrent CompletableFuture)
            (org.graalvm.polyglot Context)
-           (org.graalvm.polyglot.proxy ProxyExecutable)
-           (clojure.lang IDeref)))
+           (org.graalvm.polyglot.proxy ProxyExecutable)))
 
 
 (set! *warn-on-reflection* true)
@@ -22,7 +21,7 @@
       (deref [this]
         (deref p 100 ::timeout)))))
 
-(deftest hello
+(deftest fetch-http-status
   (System/setProperty "polyglot.engine.WarnInterpreterOnly" "false")
   (with-open [ctx (Context/create (into-array String ["js"]))]
     (let [http-client (proxy [HttpClient] []
@@ -39,17 +38,37 @@
       (let []
         (is (= "200"
               (str @p)))))))
-;; https://proposal-common-min-api.deno.dev/
-(deftest global-properties
+
+;; https://common-min-api.proposal.wintercg.org/
+(deftest wintercg-global-properties
+  (System/setProperty "polyglot.engine.WarnInterpreterOnly" "false")
+  (with-open [ctx (Context/create (into-array String ["js"]))]
+    (Inverno/wintercg ctx)
+    (is (= "object"
+          (str (.eval ctx "js" "typeof globalThis"))))
+    (is (= "true"
+          (str (.eval ctx "js" "Object.is(globalThis, globalThis.self)"))))
+    (is (= "function"
+          (str (.eval ctx "js" "typeof globalThis.btoa"))))
+    (is (= "function"
+          (str (.eval ctx "js" "typeof globalThis.atob"))))
+    (is (= "object" (str (.eval ctx "js" "typeof globalThis.console"))))
+    #_(is (= "object" (str (.eval ctx "js" "typeof globalThis.crypto"))))
+    #_(is (= "object" (str (.eval ctx "js" "typeof globalThis.navigator"))))
+    #_(is (= "object" (str (.eval ctx "js" "typeof globalThis.navigator.userAgent"))))
+    #_(is (= "object" (str (.eval ctx "js" "typeof globalThis.queueMicrotask"))))
+    #_(is (= "object" (str (.eval ctx "js" "typeof globalThis.setTimeout"))))
+    #_(is (= "object" (str (.eval ctx "js" "typeof globalThis.clearTimeout"))))
+    #_(is (= "object" (str (.eval ctx "js" "typeof globalThis.setInterval"))))
+    #_(is (= "object" (str (.eval ctx "js" "typeof globalThis.clearInterval"))))
+    #_(is (= "object" (str (.eval ctx "js" "typeof globalThis.structuredClone"))))))
+
+
+(deftest atob-btoa
   (System/setProperty "polyglot.engine.WarnInterpreterOnly" "false")
   (with-open [ctx (Context/create (into-array String ["js"]))]
     (Inverno/wintercg ctx)
     (is (= "YWJj"
           (str (.eval ctx "js" "globalThis.btoa('abc')"))))
     (is (= "abc"
-          (str (.eval ctx "js" "globalThis.atob('YWJj')"))))
-    (is (= "object" (str (.eval ctx "js" "typeof globalThis.console"))))
-    #_(is (= "object" (str (.eval ctx "js" "typeof globalThis.crypto"))))
-    #_(is (= "object" (str (.eval ctx "js" "typeof globalThis.navigator"))))
-    #_(is (= "object" (str (.eval ctx "js" "typeof globalThis.navigator.userAgent"))))
-    (is (= "object" (str (.eval ctx "js" "typeof globalThis.navigator"))))))
+          (str (.eval ctx "js" "globalThis.atob('YWJj')"))))))
