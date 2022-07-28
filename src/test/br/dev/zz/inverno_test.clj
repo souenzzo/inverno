@@ -72,3 +72,10 @@
           (str (.eval ctx "js" "globalThis.btoa('abc')"))))
     (is (= "abc"
           (str (.eval ctx "js" "globalThis.atob('YWJj')"))))))
+
+(deftest text-encoder
+  (System/setProperty "polyglot.engine.WarnInterpreterOnly" "false")
+  (with-open [ctx (Context/create (into-array String ["js"]))]
+    (Inverno/wintercg ctx)
+    (is (= "Uint8Array(3)[226, 130, 172]"
+          (str (.eval ctx "js" "(new TextEncoder()).encode('€')"))))))
