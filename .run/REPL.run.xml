@@ -1,17 +1,13 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="REPL" type="ClojureREPL" factoryName="Local" activateToolWindowBeforeRun="false" singleton="true">
+    <option name="configVersion" value="1" />
+    <option name="displayName" value="REPL" />
     <module name="inverno" />
-    <setting name="displayName" value="REPL" />
-    <setting name="replType" value="NREPL" />
-    <setting name="execution" value="INTELLIJ" />
-    <setting name="jvmArgs" value="" />
-    <setting name="parameters" value="" />
-    <setting name="workingDir" value="$PROJECT_DIR$" />
-    <setting name="profiles" value="" />
-    <setting name="aliases" value="" />
+    <option name="options" />
+    <option name="profiles" />
     <shortenClasspath name="ARGS_FILE" />
-    <setting name="fixLineNumbers" value="false" />
-    <setting name="focusEditor" value="false" />
+    <option name="VM_PARAMETERS" value="--enable-native-access=ALL-UNNAMED" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
     <method v="2" />
   </configuration>
 </component>

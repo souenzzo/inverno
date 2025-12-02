@@ -7,6 +7,9 @@
            (org.graalvm.polyglot Context)
            (org.graalvm.polyglot.proxy ProxyExecutable)))
 
+(comment
+  (require 'virgil)
+  (virgil/compile-java ["src/main"]))
 
 (set! *warn-on-reflection* true)
 
@@ -22,7 +25,6 @@
         (deref p 100 ::timeout)))))
 
 (deftest fetch-http-status
-  (System/setProperty "polyglot.engine.WarnInterpreterOnly" "false")
   (with-open [ctx (Context/create (into-array String ["js"]))]
     (let [http-client (proxy [HttpClient] []
                         (sendAsync [http-request body-handler]
@@ -41,7 +43,6 @@
 
 ;; https://common-min-api.proposal.wintercg.org/
 (deftest common-index-api-interfaces
-  (System/setProperty "polyglot.engine.WarnInterpreterOnly" "false")
   (with-open [ctx (Context/create (into-array String ["js"]))]
     (Inverno/wintercg ctx)
     (is (= "function"
@@ -49,7 +50,6 @@
 
 ;; https://common-min-api.proposal.wintercg.org/
 (deftest common-index-api-global-methods-properties
-  (System/setProperty "polyglot.engine.WarnInterpreterOnly" "false")
   (with-open [ctx (Context/create (into-array String ["js"]))]
     (Inverno/wintercg ctx)
     (is (= "object"
@@ -72,7 +72,6 @@
     #_(is (= "object" (str (.eval ctx "js" "typeof globalThis.structuredClone"))))))
 
 (deftest atob-btoa
-  (System/setProperty "polyglot.engine.WarnInterpreterOnly" "false")
   (with-open [ctx (Context/create (into-array String ["js"]))]
     (Inverno/wintercg ctx)
     (is (= "YWJj"
@@ -81,7 +80,6 @@
           (str (.eval ctx "js" "globalThis.atob('YWJj')"))))))
 
 (deftest text-encoder
-  (System/setProperty "polyglot.engine.WarnInterpreterOnly" "false")
   (with-open [ctx (Context/create (into-array String ["js"]))]
     (Inverno/wintercg ctx)
     (is (= "Uint8Array(3)[226, 130, 172]"

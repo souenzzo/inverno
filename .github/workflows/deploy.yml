@@ -9,12 +9,15 @@ jobs:
       contents: "read"
       packages: "write"
     steps:
-      - uses: "actions/checkout@v3"
-      - uses: "actions/setup-java@v3"
+      - uses: "actions/checkout@v6"
+      - uses: "actions/setup-java@v5"
         with:
-          java-version: "17"
-          distribution: "adopt"
+          java-version: "25"
+          distribution: "graalvm"
           cache: "maven"
-      - run: "mvn deploy -Dbr.dev.zz.inverno.version=${GITHUB_REF#refs/tags/}"
+      - run: "which java && java --version"
+      - run: "mvn test"
+      - run: "mvn clojure:test-with-junit clean"
+      - run: "mvn -Dbr.dev.zz.inverno.tag={{github.sha}} deploy"
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

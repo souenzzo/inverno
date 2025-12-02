@@ -13,49 +13,49 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Objects;
 
-record TextEncoderImpl(Context ctx) implements ProxyInstantiable {
+record TextEncoderImpl(Context ctx, Value uint8array) implements ProxyInstantiable {
+    public TextEncoderImpl(Context ctx) {
+        this(ctx, ctx.getBindings("js").getMember("Uint8Array"));
+    }
     public Object newInstance(Value... arguments) {
         var encoding = StandardCharsets.UTF_8;
-        var fields = new HashMap<String, Object>();
-        var Uint8Array = ctx.getBindings("js").getMember("Uint8Array");
-        // var Symbol = ctx.getBindings("js").getMember("Symbol");
-        // Symbol.execute("encoding");
-        fields.put("encoding", encoding.toString().toLowerCase());
-        fields.put("encode", (ProxyExecutable) args -> {
-            var x = args[0];
-            var v = new LinkedList<>();
-            for (var i : (Objects.isNull(x) ? "" : x.asString()).getBytes(encoding)) {
-                v.add(i);
-            }
-            return Uint8Array.invokeMember("from", ProxyArray.fromList(v));
-        });
-        return ProxyObject.fromMap(fields);
+        return ProxyObject.fromMap(Map.of(
+                "encoding", encoding.toString().toLowerCase(),
+                "encode", (ProxyExecutable) args -> {
+                    var x = args[0];
+                    var v = new LinkedList<>();
+                    for (var i : (Objects.isNull(x) ? "" : x.asString()).getBytes(encoding)) {
+                        v.add(i);
+                    }
+                    return uint8array.invokeMember("from", ProxyArray.fromList(v));
+                }));
     }
 }
 
-record FetchImpl(Context ctx, HttpClient http_client) implements  ProxyExecutable {
+record FetchImpl(Context ctx, HttpClient http_client) implements ProxyExecutable {
 
     public Object execute(Value... arguments) {
 
         var req = HttpRequest
-                .newBuilder(URI.create(String.valueOf(arguments[0])))
+                .newBuilder(URI.create(arguments[0].asString()))
                 .build();
-        var Promise = ctx.getBindings("js").getMember("Promise");
+        var b = ctx.getBindings("js");
+        var promise = b.getMember("Promise");
+        var error = b.getMember("Error");
         var fut_res = http_client.sendAsync(
                 req, HttpResponse.BodyHandlers.ofString()
         );
-        return Promise.newInstance((ProxyExecutable) arguments1 -> {
-            var ok = arguments1[0];
+        return promise.newInstance((ProxyExecutable) arguments1 -> {
+            var resolve = arguments1[0];
+            var reject = arguments1[1];
             fut_res.thenApply(res -> {
-                var m = new HashMap<String, Object>();
-                m.put("status", res.statusCode());
-                ok.execute(ProxyObject.fromMap(m));
+                resolve.execute(ProxyObject.fromMap(Map.of("status", res.statusCode())));
                 return null;
-            });
+            }).exceptionally(throwable -> reject.execute(error.execute(throwable.getMessage())));
             return null;
         });
     }
@@ -64,7 +64,7 @@ record FetchImpl(Context ctx, HttpClient http_client) implements  ProxyExecutabl
 record Btoa(Context ctx) implements ProxyExecutable {
     public Object execute(Value... arguments) {
         var encoder = Base64.getEncoder();
-        var input = String.valueOf(arguments[0]).getBytes(StandardCharsets.UTF_8);
+        var input = arguments[0].asString().getBytes(StandardCharsets.UTF_8);
         return encoder.encodeToString(input);
     }
 }
@@ -72,7 +72,7 @@ record Btoa(Context ctx) implements ProxyExecutable {
 record Atob(Context ctx) implements ProxyExecutable {
     public Object execute(Value... arguments) {
         var decoder = Base64.getDecoder();
-        var input = String.valueOf(arguments[0]);
+        var input = arguments[0].asString();
         return new String(decoder.decode(input), StandardCharsets.UTF_8);
     }
 }
@@ -93,6 +93,5 @@ public record Inverno() {
         if (Objects.nonNull(http_client)) {
             b.putMember("fetch", new FetchImpl(ctx, http_client));
         }
-        b.putMember("TextEncoder", new TextEncoderImpl(ctx));
     }
 }

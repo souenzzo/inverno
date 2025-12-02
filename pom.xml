@@ -5,12 +5,21 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>br.dev.zz</groupId>
     <artifactId>inverno</artifactId>
-    <version>${br.dev.zz.inverno.version}</version>
+    <version>0.1.4</version>
     <name>inverno</name>
+    <url>https://github.com/souenzzo/inverno</url>
+    <description>Bringing WinterCG support to GraalJS</description>
+    <scm>
+        <url>https://github.com/souenzzo/inverno</url>
+        <connection>scm:git:https://github.com/souenzzo/inverno.git</connection>
+        <developerConnection>scm:git:ssh:git@github.com:souenzzo/inverno.git</developerConnection>
+        <tag>${br.dev.zz.inverno.tag}</tag>
+    </scm>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <br.dev.zz.inverno.tag>main</br.dev.zz.inverno.tag>
+        <maven.compiler.source>25</maven.compiler.source>
+        <maven.compiler.target>25</maven.compiler.target>
     </properties>
     <build>
         <sourceDirectory>src/main</sourceDirectory>
@@ -19,34 +28,53 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M7</version>
+                <version>3.5.4</version>
+            </plugin>
+            <plugin>
+                <groupId>com.theoryinpractise</groupId>
+                <artifactId>clojure-maven-plugin</artifactId>
+                <version>1.9.3</version>
             </plugin>
         </plugins>
+
     </build>
     <dependencies>
         <dependency>
             <groupId>org.graalvm.js</groupId>
             <artifactId>js</artifactId>
-            <version>22.1.0.1</version>
+            <version>25.0.1</version>
+            <type>pom</type>
         </dependency>
         <dependency>
-            <groupId>org.graalvm.sdk</groupId>
-            <artifactId>graal-sdk</artifactId>
-            <version>22.1.0.1</version>
+            <groupId>org.graalvm.polyglot</groupId>
+            <artifactId>polyglot</artifactId>
+            <version>25.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.9.0-M1</version>
+            <version>6.0.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.clojure</groupId>
             <artifactId>clojure</artifactId>
-            <version>1.11.1</version>
+            <version>1.12.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>virgil</groupId>
+            <artifactId>virgil</artifactId>
+            <version>0.5.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <repositories>
+        <repository>
+            <id>clojars.org</id>
+            <url>https://repo.clojars.org</url>
+        </repository>
+    </repositories>
     <distributionManagement>
         <repository>
             <id>github</id>
@@ -54,4 +82,10 @@
             <url>https://maven.pkg.github.com/souenzzo/inverno</url>
         </repository>
     </distributionManagement>
+    <licenses>
+        <license>
+            <name>Apache-2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
 </project>
